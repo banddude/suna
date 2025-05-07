@@ -43,9 +43,19 @@ def setup_api_keys() -> None:
     for provider in providers:
         key = getattr(config, f'{provider}_API_KEY')
         if key:
-            logger.debug(f"API key set for provider: {provider}")
+            # For OpenRouter, LiteLLM expects OPENROUTER_API_KEY directly, not specific provider keys through it
+            # For other direct providers, LiteLLM often uses PROVIDER_API_KEY as the env var name.
+            # os.environ[f'{provider}_API_KEY'] = key 
+            logger.debug(f"API key set for provider: {provider} via config object")
         else:
-            logger.warning(f"No API key found for provider: {provider}")
+            logger.warning(f"No API key found for provider: {provider} in config object")
+
+    # Explicitly set GEMINI_API_KEY for LiteLLM if available in config
+    if config.GEMINI_API_KEY:
+        os.environ["GEMINI_API_KEY"] = config.GEMINI_API_KEY
+        logger.debug(f"Set GEMINI_API_KEY for LiteLLM from config.")
+    else:
+        logger.warning(f"No GEMINI_API_KEY found in config for direct Google Gemini access.")
 
     # Set up OpenRouter API base if not already set
     if config.OPENROUTER_API_KEY and config.OPENROUTER_API_BASE:
