@@ -109,15 +109,23 @@ async def log_requests_middleware(request: Request, call_next):
         raise
 
 # Define allowed origins based on environment
-allowed_origins = ["https://www.suna.so", "https://suna.so", "https://staging.suna.so", "http://localhost:3000"]
+allowed_origins = [
+    "https://www.suna.so", 
+    "https://suna.so", 
+    "https://staging.suna.so", 
+    "http://localhost:3000",
+    "https://suna-production-420.up.railway.app"  # Added your Railway frontend URL
+]
 
 # Add staging-specific origins
 if config.ENV_MODE == EnvMode.STAGING:
-    allowed_origins.append("http://localhost:3000")
+    # allowed_origins.append("http://localhost:3000") # Already included
+    pass
     
 # Add local-specific origins
 if config.ENV_MODE == EnvMode.LOCAL:
-    allowed_origins.append("http://localhost:3000")
+    # allowed_origins.append("http://localhost:3000") # Already included
+    pass
 
 app.add_middleware(
     CORSMiddleware,
